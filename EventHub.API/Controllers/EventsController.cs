@@ -30,7 +30,7 @@ namespace EventHub.API.Controllers
         {
             var eventItem = await _context.Events.FindAsync(id);
 
-            if(eventItem == null)
+            if (eventItem == null)
             {
                 return NotFound();
             }
@@ -46,6 +46,27 @@ namespace EventHub.API.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetById), new { id = eventItem.Id }, eventItem);
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<Event>> Update(int id, Event eventItem)
+        {
+            var existingEvent = await _context.Events.FindAsync(id);
+
+            if(existingEvent == null)
+            {
+                return NotFound();
+            }
+
+            existingEvent.Name = eventItem.Name;
+            existingEvent.Description = eventItem.Description;
+            existingEvent.Date = eventItem.Date;
+            existingEvent.Location = eventItem.Location;
+            existingEvent.Capacity = eventItem.Capacity;
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }
