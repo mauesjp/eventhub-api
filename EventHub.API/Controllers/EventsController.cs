@@ -68,5 +68,22 @@ namespace EventHub.API.Controllers
 
             return NoContent();
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var existingEvent = await _context.Events.FindAsync(id);
+
+            if(existingEvent == null)
+            {
+                return NotFound();
+            }
+
+            _context.Events.Remove(existingEvent);
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
