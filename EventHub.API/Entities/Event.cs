@@ -13,7 +13,7 @@
         {
         }
 
-        public Event(int id, string name, string description, DateTime date, string location, int capacity)
+        public Event(string name, string description, DateTime date, string location, int capacity)
         {
             Name = name;
             Description = description;

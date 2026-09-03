@@ -1,4 +1,5 @@
 ﻿using EventHub.API.Data;
+using EventHub.API.DTOs;
 using EventHub.API.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,15 +19,31 @@ namespace EventHub.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Event>>> GetAll()
+        public async Task<ActionResult<IEnumerable<EventResponseDto>>> GetAll()
         {
             var events = await _context.Events.ToListAsync();
+            var eventsResponse = new List<EventResponseDto>();
 
-            return Ok(events);
+            foreach (Event item in events)
+            {
+                var newevent = new EventResponseDto
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    Description = item.Description,
+                    Date = item.Date,
+                    Location = item.Location,
+                    Capacity = item.Capacity
+                };
+
+                eventsResponse.Add(newevent);
+            }
+
+            return Ok(eventsResponse);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Event>> GetById(int id)
+        public async Task<ActionResult<EventResponseDto>> GetById(int id)
         {
             var eventItem = await _context.Events.FindAsync(id);
 
@@ -35,25 +52,46 @@ namespace EventHub.API.Controllers
                 return NotFound();
             }
 
-            return Ok(eventItem);
+            EventResponseDto eventResponse = new EventResponseDto
+            {
+                Id = eventItem.Id,
+                Name = eventItem.Name,
+                Description = eventItem.Description,
+                Date = eventItem.Date,
+                Location = eventItem.Location,
+                Capacity = eventItem.Capacity
+            };
+
+            return Ok(eventResponse);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Event>> Create(Event eventItem)
+        public async Task<ActionResult<EventResponseDto>> Create(CreateEventDto eventItem)
         {
-            _context.Events.Add(eventItem);
+            Event newEvent = new Event(eventItem.Name, eventItem.Description, eventItem.Date, eventItem.Location, eventItem.Capacity);
+            _context.Events.Add(newEvent);
 
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetById), new { id = eventItem.Id }, eventItem);
+            EventResponseDto eventResponse = new EventResponseDto
+            {
+                Id = newEvent.Id,
+                Name = newEvent.Name,
+                Description = newEvent.Description,
+                Date = newEvent.Date,
+                Location = newEvent.Location,
+                Capacity = newEvent.Capacity
+            };
+
+            return CreatedAtAction(nameof(GetById), new { id = newEvent.Id }, eventResponse);
         }
 
         [HttpPut]
-        public async Task<ActionResult<Event>> Update(int id, Event eventItem)
+        public async Task<ActionResult> Update(int id, UpdateEventDto eventItem)
         {
             var existingEvent = await _context.Events.FindAsync(id);
 
-            if(existingEvent == null)
+            if (existingEvent == null)
             {
                 return NotFound();
             }
@@ -74,7 +112,7 @@ namespace EventHub.API.Controllers
         {
             var existingEvent = await _context.Events.FindAsync(id);
 
-            if(existingEvent == null)
+            if (existingEvent == null)
             {
                 return NotFound();
             }
