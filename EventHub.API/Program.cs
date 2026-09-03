@@ -1,5 +1,8 @@
-
 using EventHub.API.Data;
+using EventHub.API.Repositories;
+using EventHub.API.Repositories.Interfaces;
+using EventHub.API.Services;
+using EventHub.API.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventHub.API
@@ -11,6 +14,8 @@ namespace EventHub.API
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddControllers();
+            builder.Services.AddScoped<IEventService, EventService>();
+            builder.Services.AddScoped<IEventRepository, EventRepository>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
