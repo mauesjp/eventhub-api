@@ -15,12 +15,20 @@ namespace EventHub.API.Controllers
             _userService = userService;
         }
 
-        [HttpPost]
+        [HttpPost("register")]
         public async Task<ActionResult<UserResponseDto>> Register(RegisterUserDto dto)
         {
             var userResponse = await _userService.RegisterAsync(dto);
 
             return Created(string.Empty, userResponse);
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<LoginResponseDto>> Login(LoginUserDto dto)
+        {
+            var loginResponse = await _userService.VerifyLogin(dto);
+
+            return Ok(loginResponse);
         }
     } 
 }

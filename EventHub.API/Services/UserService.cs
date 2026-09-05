@@ -50,5 +50,32 @@ namespace EventHub.API.Services
 
             return userResponse;
         }
+
+        public async Task<LoginResponseDto> VerifyLogin(LoginUserDto dto)
+        {
+            var user = await _userRepository.GetByEmailAsync(dto.Email);
+
+            if (user == null)
+            {
+                throw new InvalidOperationException("Invalid email or password.");
+            }
+
+            var passwordVerification = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
+
+            if (passwordVerification == PasswordVerificationResult.Failed)
+            {
+                throw new InvalidOperationException("Invalid email or password.");
+            }
+
+            LoginResponseDto loginResponse = new LoginResponseDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                UserRole = user.UserRole
+            };
+
+            return loginResponse;
+        }
     }
 }
