@@ -16,6 +16,8 @@ namespace EventHub.API
             builder.Services.AddControllers();
             builder.Services.AddScoped<IEventService, EventService>();
             builder.Services.AddScoped<IEventRepository, EventRepository>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IUserService, UserService>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
