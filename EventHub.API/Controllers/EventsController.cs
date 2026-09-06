@@ -17,7 +17,6 @@ namespace EventHub.API.Controllers
             _eventService = eventService;
         }
 
-        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EventResponseDto>>> GetAll()
         {
@@ -39,6 +38,7 @@ namespace EventHub.API.Controllers
             return Ok(eventItem);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<EventResponseDto>> Create(CreateEventDto eventItem)
         {
@@ -47,7 +47,8 @@ namespace EventHub.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id = eventResponse.Id }, eventResponse);
         }
 
-        [HttpPut]
+        [Authorize(Roles = "Admin")]
+        [HttpPut("{id}")]
         public async Task<ActionResult> Update(int id, UpdateEventDto eventItem)
         {
             var updateEvent = await _eventService.UpdateAsync(id, eventItem);
@@ -60,6 +61,7 @@ namespace EventHub.API.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
