@@ -1,5 +1,6 @@
 ﻿using EventHub.API.DTOs;
 using EventHub.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventHub.API.Controllers
@@ -16,6 +17,7 @@ namespace EventHub.API.Controllers
             _eventService = eventService;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EventResponseDto>>> GetAll()
         {

@@ -10,11 +10,13 @@ namespace EventHub.API.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly PasswordHasher<User> _passwordHasher;
+        private readonly ITokenService _tokenService;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, ITokenService tokenService)
         {
             _userRepository = userRepository;
             _passwordHasher = new PasswordHasher<User>();
+            _tokenService = tokenService;
         }
 
         public async Task<UserResponseDto> RegisterAsync(RegisterUserDto dto)
@@ -67,11 +69,14 @@ namespace EventHub.API.Services
                 throw new InvalidOperationException("Invalid email or password.");
             }
 
+            var token = _tokenService.GenerateToken(user);
+
             LoginResponseDto loginResponse = new LoginResponseDto
             {
                 Id = user.Id,
                 Name = user.Name,
                 Email = user.Email,
+                Token = token,
                 UserRole = user.UserRole
             };
 
