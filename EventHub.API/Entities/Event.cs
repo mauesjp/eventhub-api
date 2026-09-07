@@ -8,6 +8,7 @@
         public DateTime Date { get; set; }
         public string Location { get; set; }
         public int Capacity { get; set; }
+        public ICollection<TicketBatch> TicketBatches { get; set; } = new List<TicketBatch>();
 
         public Event()
         {

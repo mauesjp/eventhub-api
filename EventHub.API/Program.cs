@@ -23,6 +23,8 @@ namespace EventHub.API
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<ITokenService, TokenService>();
+            builder.Services.AddScoped<ITicketBatchService, TicketBatchService>();
+            builder.Services.AddScoped<ITicketBatchRepository, TicketBatchRepository>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>

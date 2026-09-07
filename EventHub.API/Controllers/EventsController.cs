@@ -20,9 +20,7 @@ namespace EventHub.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EventResponseDto>>> GetAll()
         {
-            var events = await _eventService.GetAllAsync();
-
-            return Ok(events);
+            return Ok(await _eventService.GetAllAsync());
         }
 
         [HttpGet("{id}")]

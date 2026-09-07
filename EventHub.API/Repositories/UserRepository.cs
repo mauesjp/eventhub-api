@@ -16,9 +16,7 @@ namespace EventHub.API.Repositories
 
         public async Task<User?> GetByEmailAsync(string email)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(user => user.Email == email);
-
-            return user;
+            return await _context.Users.FirstOrDefaultAsync(user => user.Email == email);
         }
 
         public async Task AddAsync(User user)
