@@ -66,6 +66,21 @@ namespace EventHub.API.Services
 
         public async Task<TicketBatchResponseDto> CreateAsync(CreateTicketBatchDto dto)
         {
+            if (dto.EndDate <= dto.StartDate)
+            {
+                throw new InvalidOperationException("EndDate must be greater than StartDate.");
+            }
+
+            if (dto.Price <= 0)
+            {
+                throw new InvalidOperationException("Price must be greater than zero.");
+            }
+
+            if (dto.Quantity <= 0)
+            {
+                throw new InvalidOperationException("Quantity must be greater than zero.");
+            }
+
             var findEvent = await _eventRepository.GetByIdAsync(dto.EventId);
 
             if (findEvent == null)
@@ -100,9 +115,24 @@ namespace EventHub.API.Services
 
         public async Task<bool> UpdateAsync(int id, UpdateTicketBatchDto dto)
         {
+            if (dto.EndDate <= dto.StartDate)
+            {
+                throw new InvalidOperationException("EndDate must be greater than StartDate.");
+            }
+
+            if (dto.Price <= 0)
+            {
+                throw new InvalidOperationException("Price must be greater than zero.");
+            }
+
+            if (dto.Quantity <= 0)
+            {
+                throw new InvalidOperationException("Quantity must be greater than zero.");
+            }
+
             var ticketBatch = await _ticketBatchRepository.GetByIdAsync(id);
 
-            if(ticketBatch == null)
+            if (ticketBatch == null)
             {
                 return false;
             }
