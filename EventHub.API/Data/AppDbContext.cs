@@ -12,5 +12,7 @@ namespace EventHub.API.Data
         public DbSet<Event> Events { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<TicketBatch> TicketBatches { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
     }
 }

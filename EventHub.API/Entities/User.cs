@@ -9,6 +9,7 @@ namespace EventHub.API.Entities
         public string Email { get; set; }
         public string PasswordHash { get; set; }
         public Role UserRole { get; set; }
+        public ICollection<Order> Orders { get; set; } = new List<Order>();
 
         public User()
         {

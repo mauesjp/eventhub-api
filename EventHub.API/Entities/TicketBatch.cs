@@ -10,6 +10,7 @@
         public DateTime EndDate { get; set; }
         public int EventId { get; set; }
         public Event Event { get; set; } = null!;
+        public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 
         public TicketBatch()
         {

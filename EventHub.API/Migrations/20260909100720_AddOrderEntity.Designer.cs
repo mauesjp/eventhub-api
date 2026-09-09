@@ -4,6 +4,7 @@ using EventHub.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventHub.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260909100720_AddOrderEntity")]
+    partial class AddOrderEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,40 +81,6 @@ namespace EventHub.API.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Orders");
-                });
-
-            modelBuilder.Entity("EventHub.API.Entities.Ticket", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<bool>("IsUsed")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TicketBatchId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("TicketBatchId");
-
-                    b.ToTable("Tickets");
                 });
 
             modelBuilder.Entity("EventHub.API.Entities.TicketBatch", b =>
@@ -187,25 +156,6 @@ namespace EventHub.API.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("EventHub.API.Entities.Ticket", b =>
-                {
-                    b.HasOne("EventHub.API.Entities.Order", "Order")
-                        .WithMany("Tickets")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EventHub.API.Entities.TicketBatch", "TicketBatch")
-                        .WithMany("Tickets")
-                        .HasForeignKey("TicketBatchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-
-                    b.Navigation("TicketBatch");
-                });
-
             modelBuilder.Entity("EventHub.API.Entities.TicketBatch", b =>
                 {
                     b.HasOne("EventHub.API.Entities.Event", "Event")
@@ -220,16 +170,6 @@ namespace EventHub.API.Migrations
             modelBuilder.Entity("EventHub.API.Entities.Event", b =>
                 {
                     b.Navigation("TicketBatches");
-                });
-
-            modelBuilder.Entity("EventHub.API.Entities.Order", b =>
-                {
-                    b.Navigation("Tickets");
-                });
-
-            modelBuilder.Entity("EventHub.API.Entities.TicketBatch", b =>
-                {
-                    b.Navigation("Tickets");
                 });
 
             modelBuilder.Entity("EventHub.API.Entities.User", b =>
