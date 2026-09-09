@@ -25,6 +25,8 @@ namespace EventHub.API
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<ITicketBatchService, TicketBatchService>();
             builder.Services.AddScoped<ITicketBatchRepository, TicketBatchRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
