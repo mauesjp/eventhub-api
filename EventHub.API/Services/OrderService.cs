@@ -8,31 +8,33 @@ namespace EventHub.API.Services
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _repository;
+        private readonly ITicketRepository _ticketRepository;
         private readonly ITicketBatchRepository _ticketBatch;
 
-        public OrderService(IOrderRepository repository, ITicketBatchRepository ticketBatch)
+        public OrderService(IOrderRepository repository, ITicketBatchRepository ticketBatch, ITicketRepository ticketRepository)
         {
             _repository = repository;
             _ticketBatch = ticketBatch;
+            _ticketRepository = ticketRepository;
         }
 
         public async Task<OrderResponseDto> CreateAsync(int userId, CreateOrderDto dto)
         {
             var ticketBatch = await _ticketBatch.GetByIdAsync(dto.TicketBatchId);
 
-            if(ticketBatch == null)
+            if (ticketBatch == null)
             {
                 throw new InvalidOperationException("Non-existent Batch");
             }
 
-            if(dto.Quantity > ticketBatch.Quantity)
+            if (dto.Quantity > ticketBatch.Quantity)
             {
                 throw new InvalidOperationException("The quantity exceeds the number of available tickets.");
             }
 
             var now = DateTime.UtcNow;
 
-            if(now < ticketBatch.StartDate || now > ticketBatch.EndDate)
+            if (now < ticketBatch.StartDate || now > ticketBatch.EndDate)
             {
                 throw new InvalidOperationException("Ticket Batch is out of range");
             }
@@ -46,6 +48,17 @@ namespace EventHub.API.Services
 
             await _repository.AddAsync(order);
             await _repository.SaveChangesAsync();
+
+
+            for (int i = 0; i < dto.Quantity; i++)
+            {
+                var code = $"EVT-{Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper()}";
+
+                var ticket = new Ticket(order.Id, dto.TicketBatchId, code);
+
+                await _ticketRepository.AddAsync(ticket);
+            }
+            await _ticketRepository.SaveChangesAsync();
 
 
             var orderResponse = new OrderResponseDto

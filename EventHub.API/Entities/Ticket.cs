@@ -1,7 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace EventHub.API.Entities
 {
+    [Index(nameof(Code), IsUnique = true)]
     public class Ticket
     {
         public int Id { get; set; }
