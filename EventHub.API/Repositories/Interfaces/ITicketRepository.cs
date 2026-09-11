@@ -6,5 +6,6 @@ namespace EventHub.API.Repositories.Interfaces
     {
         Task AddAsync(Ticket ticket);
         Task SaveChangesAsync();
+        Task<IEnumerable<Ticket>> GetByUserIdAsync(int userId);
     }
 }
