@@ -74,5 +74,29 @@ namespace EventHub.API.Services
 
             return orderResponse;
         }
+
+        public async Task<IEnumerable<OrderResponseDto>> GetMyOrdersAsync(int userId)
+        {
+            var orders = await _repository.GetByUserIdAsync(userId);
+            List<OrderResponseDto> orderList = new List<OrderResponseDto>();
+
+            foreach (Order order in orders)
+            {
+                var orderResponse = new OrderResponseDto
+                {
+                    CreatedAt = order.CreatedAt,
+                    TotalAmount = order.TotalAmount,
+                    Id = order.Id,
+                    Quantity = order.Quantity,
+                    Status = order.Status,
+                    TicketBatchId = order.TicketBatchId,
+                    UserId = order.UserId
+                };
+
+                orderList.Add(orderResponse);
+            }
+
+            return orderList;
+        }
     }
 }

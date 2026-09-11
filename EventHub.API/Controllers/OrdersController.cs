@@ -34,5 +34,19 @@ namespace EventHub.API.Controllers
             return Created(string.Empty, orderResponse);
         }
 
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<ActionResult<IEnumerable<OrderResponseDto>>> GetMyOrdersAsync()
+        {
+            var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if(!int.TryParse(userIdString, out int userId))
+            {
+                return Unauthorized();
+            }
+
+            return Ok(await _orderService.GetMyOrdersAsync(userId));
+        }
+
     }
 }
