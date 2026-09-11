@@ -1,5 +1,6 @@
 ﻿using EventHub.API.DTOs;
 using EventHub.API.Entities;
+using EventHub.API.Exceptions;
 using EventHub.API.Repositories.Interfaces;
 using EventHub.API.Services.Interfaces;
 
@@ -24,19 +25,19 @@ namespace EventHub.API.Services
 
             if (ticketBatch == null)
             {
-                throw new InvalidOperationException("Non-existent Batch");
+                throw new NotFoundException("Non-existent Batch");
             }
 
             if (dto.Quantity > ticketBatch.Quantity)
             {
-                throw new InvalidOperationException("The quantity exceeds the number of available tickets.");
+                throw new BusinessRuleException("The quantity exceeds the number of available tickets.");
             }
 
             var now = DateTime.UtcNow;
 
             if (now < ticketBatch.StartDate || now > ticketBatch.EndDate)
             {
-                throw new InvalidOperationException("Ticket Batch is out of range");
+                throw new BusinessRuleException("Ticket Batch is out of range");
             }
 
             var totalAmount = dto.Quantity * ticketBatch.Price;

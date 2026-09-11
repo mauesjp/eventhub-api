@@ -1,5 +1,6 @@
 ﻿using EventHub.API.DTOs;
 using EventHub.API.Entities;
+using EventHub.API.Exceptions;
 using EventHub.API.Repositories.Interfaces;
 using EventHub.API.Services.Interfaces;
 
@@ -68,24 +69,24 @@ namespace EventHub.API.Services
         {
             if (dto.EndDate <= dto.StartDate)
             {
-                throw new InvalidOperationException("EndDate must be greater than StartDate.");
+                throw new BusinessRuleException("EndDate must be greater than StartDate.");
             }
 
             if (dto.Price <= 0)
             {
-                throw new InvalidOperationException("Price must be greater than zero.");
+                throw new BusinessRuleException("Price must be greater than zero.");
             }
 
             if (dto.Quantity <= 0)
             {
-                throw new InvalidOperationException("Quantity must be greater than zero.");
+                throw new BusinessRuleException("Quantity must be greater than zero.");
             }
 
             var findEvent = await _eventRepository.GetByIdAsync(dto.EventId);
 
             if (findEvent == null)
             {
-                throw new InvalidOperationException("Event not found.");
+                throw new NotFoundException("Event not found.");
             }
 
             var newTicketBatch = new TicketBatch
@@ -117,17 +118,17 @@ namespace EventHub.API.Services
         {
             if (dto.EndDate <= dto.StartDate)
             {
-                throw new InvalidOperationException("EndDate must be greater than StartDate.");
+                throw new BusinessRuleException("EndDate must be greater than StartDate.");
             }
 
             if (dto.Price <= 0)
             {
-                throw new InvalidOperationException("Price must be greater than zero.");
+                throw new BusinessRuleException("Price must be greater than zero.");
             }
 
             if (dto.Quantity <= 0)
             {
-                throw new InvalidOperationException("Quantity must be greater than zero.");
+                throw new BusinessRuleException("Quantity must be greater than zero.");
             }
 
             var ticketBatch = await _ticketBatchRepository.GetByIdAsync(id);
@@ -141,7 +142,7 @@ namespace EventHub.API.Services
 
             if (findEvent == null)
             {
-                throw new InvalidOperationException("Event not found.");
+                throw new NotFoundException("Event not found.");
             }
 
             ticketBatch.Name = dto.Name;
@@ -157,7 +158,7 @@ namespace EventHub.API.Services
             return true;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id) 
         {
             var ticketBatch = await _ticketBatchRepository.GetByIdAsync(id);
 

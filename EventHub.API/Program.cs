@@ -1,4 +1,5 @@
 using EventHub.API.Data;
+using EventHub.API.Exceptions;
 using EventHub.API.Repositories;
 using EventHub.API.Repositories.Interfaces;
 using EventHub.API.Services;
@@ -85,6 +86,8 @@ namespace EventHub.API
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseHttpsRedirection();
 

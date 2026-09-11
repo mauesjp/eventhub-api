@@ -1,5 +1,6 @@
 ﻿using EventHub.API.DTOs;
 using EventHub.API.Entities;
+using EventHub.API.Exceptions;
 using EventHub.API.Repositories.Interfaces;
 using EventHub.API.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -25,7 +26,7 @@ namespace EventHub.API.Services
 
             if (user != null)
             {
-                throw new InvalidOperationException("Email already registered.");
+                throw new ConflictException("Email already registered.");
             }
 
             User newUser = new User
@@ -59,14 +60,14 @@ namespace EventHub.API.Services
 
             if (user == null)
             {
-                throw new InvalidOperationException("Invalid email or password.");
+                throw new UnauthorizedException("Invalid email or password.");
             }
 
             var passwordVerification = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
 
             if (passwordVerification == PasswordVerificationResult.Failed)
             {
-                throw new InvalidOperationException("Invalid email or password.");
+                throw new UnauthorizedException("Invalid email or password.");
             }
 
             var token = _tokenService.GenerateToken(user);

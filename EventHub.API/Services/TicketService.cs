@@ -1,5 +1,6 @@
 ﻿using EventHub.API.DTOs;
 using EventHub.API.Entities;
+using EventHub.API.Exceptions;
 using EventHub.API.Repositories.Interfaces;
 using EventHub.API.Services.Interfaces;
 
@@ -43,12 +44,12 @@ namespace EventHub.API.Services
 
             if(ticket == null)
             {
-                throw new InvalidOperationException("Ticket does not exist");
+                throw new NotFoundException("Ticket does not exist");
             }
 
             if(ticket.IsUsed == true)
             {
-                throw new InvalidOperationException("Ticket has already been used.");
+                throw new BusinessRuleException("Ticket has already been used.");
             }
 
             ticket.IsUsed = true;
