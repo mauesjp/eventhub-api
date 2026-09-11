@@ -36,5 +36,27 @@ namespace EventHub.API.Services
 
             return ticketList;
         }
+
+        public async Task<bool> CheckInAsync(string code)
+        {
+            var ticket = await _repository.GetByCodeAsync(code);
+
+            if(ticket == null)
+            {
+                throw new InvalidOperationException("Ticket does not exist");
+            }
+
+            if(ticket.IsUsed == true)
+            {
+                throw new InvalidOperationException("Ticket has already been used.");
+            }
+
+            ticket.IsUsed = true;
+
+            _repository.Update(ticket);
+            await _repository.SaveChangesAsync();
+
+            return true;
+        }
     }
 }

@@ -5,5 +5,6 @@ namespace EventHub.API.Services.Interfaces
     public interface ITicketService
     {
         Task<IEnumerable<TicketResponseDto>> GetMyTicketsAsync(int userId);
+        Task<bool> CheckInAsync(string code);
     }
 }

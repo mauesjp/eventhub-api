@@ -28,5 +28,15 @@ namespace EventHub.API.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<Ticket?> GetByCodeAsync(string code)
+        {
+            return await _context.Tickets.FirstOrDefaultAsync(ticket => ticket.Code == code);
+        }
+
+        public void Update(Ticket ticket)
+        {
+            _context.Tickets.Update(ticket);
+        }
     }
 }

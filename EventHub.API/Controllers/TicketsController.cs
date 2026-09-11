@@ -23,12 +23,21 @@ namespace EventHub.API.Controllers
         {
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if(!int.TryParse(userIdString, out int userId))
+            if (!int.TryParse(userIdString, out int userId))
             {
                 return Unauthorized();
             }
 
             return Ok(await _ticketService.GetMyTicketsAsync(userId));
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("check-in/{code}")]
+        public async Task<ActionResult> CheckIn(string code)
+        {
+            await _ticketService.CheckInAsync(code);
+
+            return NoContent();
         }
     }
 }
