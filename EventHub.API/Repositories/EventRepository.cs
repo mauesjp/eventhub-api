@@ -14,11 +14,13 @@ namespace EventHub.API.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Event>> GetAllAsync()
+        public async Task<IEnumerable<Event>> GetAllAsync(int pageNumber, int pageSize)
         {
-            var events = await _context.Events.ToListAsync();
-
-            return events;
+            return await _context.Events
+                .OrderBy(e => e.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
 
         public async Task<Event?> GetByIdAsync(int id)
@@ -44,6 +46,11 @@ namespace EventHub.API.Repositories
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> CountAsync()
+        {
+            return await _context.Events.CountAsync();           
         }
     }
 }

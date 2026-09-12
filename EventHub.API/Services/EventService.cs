@@ -1,5 +1,6 @@
 ﻿using EventHub.API.DTOs;
 using EventHub.API.Entities;
+using EventHub.API.Exceptions;
 using EventHub.API.Repositories.Interfaces;
 using EventHub.API.Services.Interfaces;
 
@@ -14,9 +15,19 @@ namespace EventHub.API.Services
             _eventRepository = eventRepository;
         }
 
-        public async Task<IEnumerable<EventResponseDto>> GetAllAsync()
+        public async Task<PagedResponseDto<EventResponseDto>> GetAllAsync(int pageNumber, int pageSize)
         {
-            var events = await _eventRepository.GetAllAsync();
+            if (pageNumber < 1)
+            {
+                throw new BusinessRuleException("Page number must be greater than zero.");
+            }
+
+            if (pageSize < 1 || pageSize > 100)
+            {
+                throw new BusinessRuleException("Page size must be between 1 and 100.");
+            }
+
+            var events = await _eventRepository.GetAllAsync(pageNumber, pageSize);
             var eventsResponse = new List<EventResponseDto>();
 
             foreach (Event item in events)
@@ -34,14 +45,27 @@ namespace EventHub.API.Services
                 eventsResponse.Add(eventResponse);
             }
 
-            return eventsResponse;
+            var totalItems = await _eventRepository.CountAsync();
+
+            var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+            var response = new PagedResponseDto<EventResponseDto>
+            {
+                CurrentPage = pageNumber,
+                PageSize = pageSize,
+                TotalItems = totalItems,
+                TotalPages = totalPages,
+                Items = eventsResponse
+            };
+
+            return response;
         }
 
         public async Task<EventResponseDto?> GetByIdAsync(int id)
         {
             var eventItem = await _eventRepository.GetByIdAsync(id);
 
-            if(eventItem == null)
+            if (eventItem == null)
             {
                 return null;
             }
@@ -91,7 +115,7 @@ namespace EventHub.API.Services
         {
             var eventItem = await _eventRepository.GetByIdAsync(id);
 
-            if(eventItem == null)
+            if (eventItem == null)
             {
                 return false;
             }
@@ -108,11 +132,11 @@ namespace EventHub.API.Services
             return true;
         }
 
-        public async Task<bool> DeleteAsync (int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             var eventItem = await _eventRepository.GetByIdAsync(id);
 
-            if(eventItem == null)
+            if (eventItem == null)
             {
                 return false;
             }
