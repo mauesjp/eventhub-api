@@ -5,9 +5,9 @@ namespace EventHub.API.Entities
     public class User
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string PasswordHash { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string PasswordHash { get; set; } = string.Empty;
         public Role UserRole { get; set; }
         public ICollection<Order> Orders { get; set; } = new List<Order>();
 
