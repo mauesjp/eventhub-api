@@ -20,6 +20,10 @@ namespace EventHub.API.Controllers
 
         [Authorize]
         [HttpPost]
+        [ProducesResponseType(typeof(OrderResponseDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<OrderResponseDto>> Create(CreateOrderDto dto)
         {
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -36,6 +40,8 @@ namespace EventHub.API.Controllers
 
         [Authorize]
         [HttpGet("me")]
+        [ProducesResponseType(typeof(IEnumerable<OrderResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<IEnumerable<OrderResponseDto>>> GetMyOrdersAsync()
         {
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

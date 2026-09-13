@@ -17,12 +17,15 @@ namespace EventHub.API.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<TicketBatchResponseDto>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<TicketBatchResponseDto>>> GetAll()
         {
             return Ok(await _ticketBatchService.GetAllAsync());
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(TicketBatchResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<TicketBatchResponseDto>> GetById(int id)
         {
             var ticketBatch = await _ticketBatchService.GetByIdAsync(id);
@@ -37,6 +40,11 @@ namespace EventHub.API.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
+        [ProducesResponseType(typeof(TicketBatchResponseDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<TicketBatchResponseDto>> Create(CreateTicketBatchDto dto)
         {
             var ticketBatch = await _ticketBatchService.CreateAsync(dto);
@@ -46,6 +54,11 @@ namespace EventHub.API.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> Update(int id, UpdateTicketBatchDto dto)
         {
             var updateEvent = await _ticketBatchService.UpdateAsync(id, dto);
@@ -60,6 +73,10 @@ namespace EventHub.API.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
         {
             var deleteEvent = await _ticketBatchService.DeleteAsync(id);

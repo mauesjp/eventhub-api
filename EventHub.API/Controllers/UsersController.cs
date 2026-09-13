@@ -16,6 +16,9 @@ namespace EventHub.API.Controllers
         }
 
         [HttpPost("register")]
+        [ProducesResponseType(typeof(UserResponseDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<ActionResult<UserResponseDto>> Register(RegisterUserDto dto)
         {
             var userResponse = await _userService.RegisterAsync(dto);
@@ -24,6 +27,9 @@ namespace EventHub.API.Controllers
         }
 
         [HttpPost("login")]
+        [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<LoginResponseDto>> Login(LoginUserDto dto)
         {
             var loginResponse = await _userService.VerifyLogin(dto);

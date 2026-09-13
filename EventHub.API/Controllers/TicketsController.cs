@@ -19,6 +19,8 @@ namespace EventHub.API.Controllers
 
         [Authorize]
         [HttpGet("me")]
+        [ProducesResponseType(typeof(IEnumerable<TicketResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<IEnumerable<TicketResponseDto>>> GetMyTicketsAsync()
         {
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -33,6 +35,11 @@ namespace EventHub.API.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost("check-in/{code}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> CheckIn(string code)
         {
             await _ticketService.CheckInAsync(code);

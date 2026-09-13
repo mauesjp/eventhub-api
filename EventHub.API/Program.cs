@@ -4,6 +4,7 @@ using EventHub.API.Repositories;
 using EventHub.API.Repositories.Interfaces;
 using EventHub.API.Services;
 using EventHub.API.Services.Interfaces;
+using EventHub.API.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -44,10 +45,7 @@ namespace EventHub.API
                     Description = "Digite o token JWT."
                 });
 
-                options.AddSecurityRequirement(document => new()
-                {
-                    [new OpenApiSecuritySchemeReference("Bearer", document)] = []
-                });
+                options.OperationFilter<AuthorizeOperationFilter>();
             });
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
