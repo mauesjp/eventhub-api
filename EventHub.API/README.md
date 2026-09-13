@@ -128,10 +128,8 @@ No Swagger também é possível utilizar o botão `Authorize`.
 
 A aplicação possui dois níveis de acesso:
 
-```text
-Customer
-Admin
-```
+* `Customer`
+* `Admin`
 
 ### Customer
 
@@ -207,65 +205,131 @@ GET /api/events?startDate=2026-11-01&endDate=2026-11-30
 GET /api/events?pageNumber=1&pageSize=10&name=Tech&location=Londrina&startDate=2026-01-01&endDate=2026-12-31
 ```
 
-## Principais endpoints
+## Documentação dos endpoints
 
-### Users
+### Usuários
 
-```text
-POST /api/users/register
-POST /api/users/login
+|Método|Endpoint|Acesso|Descrição|
+|-|-|-|-|
+|POST|`/api/users/register`|Público|Cadastra um novo usuário com role `Customer`.|
+|POST|`/api/users/login`|Público|Realiza o login e retorna um token JWT.|
+
+### Eventos
+
+|Método|Endpoint|Acesso|Descrição|
+|-|-|-|-|
+|GET|`/api/events`|Público|Lista eventos com paginação e filtros por nome, localização e intervalo de datas.|
+|GET|`/api/events/{id}`|Público|Busca um evento pelo ID.|
+|POST|`/api/events`|Admin|Cria um novo evento.|
+|PUT|`/api/events/{id}`|Admin|Atualiza um evento existente.|
+|DELETE|`/api/events/{id}`|Admin|Exclui um evento.|
+
+#### Parâmetros de `GET /api/events`
+
+|Parâmetro|Tipo|Obrigatório|Descrição|
+|-|-|-|-|
+|`pageNumber`|int|Não|Número da página. Valor padrão: `1`.|
+|`pageSize`|int|Não|Quantidade de registros por página. Valor padrão: `10`. Máximo: `100`.|
+|`name`|string|Não|Filtra eventos pelo nome.|
+|`location`|string|Não|Filtra eventos pela localização.|
+|`startDate`|DateTime|Não|Retorna eventos a partir desta data.|
+|`endDate`|DateTime|Não|Retorna eventos até esta data.|
+
+Exemplo:
+
+```http
+GET /api/events?pageNumber=1&pageSize=10&name=Tech&location=Londrina&startDate=2026-01-01&endDate=2026-12-31
 ```
 
-### Events
+### Lotes de ingressos
 
-```text
-GET    /api/events
-GET    /api/events/{id}
-POST   /api/events
-PUT    /api/events/{id}
-DELETE /api/events/{id}
-```
+|Método|Endpoint|Acesso|Descrição|
+|-|-|-|-|
+|GET|`/api/ticketbatches`|Público|Lista todos os lotes de ingressos.|
+|GET|`/api/ticketbatches/{id}`|Público|Busca um lote de ingressos pelo ID.|
+|POST|`/api/ticketbatches`|Admin|Cria um novo lote associado a um evento.|
+|PUT|`/api/ticketbatches/{id}`|Admin|Atualiza um lote de ingressos.|
+|DELETE|`/api/ticketbatches/{id}`|Admin|Exclui um lote de ingressos.|
 
-### Ticket Batches
+### Pedidos
 
-```text
-GET    /api/ticketbatches
-GET    /api/ticketbatches/{id}
-POST   /api/ticketbatches
-PUT    /api/ticketbatches/{id}
-DELETE /api/ticketbatches/{id}
-```
+|Método|Endpoint|Acesso|Descrição|
+|-|-|-|-|
+|POST|`/api/orders`|Autenticado|Cria um pedido para o usuário autenticado.|
+|GET|`/api/orders/me`|Autenticado|Lista os pedidos do usuário autenticado.|
 
-### Orders
+Ao criar um pedido, a API:
 
-```text
-POST /api/orders
-GET  /api/orders/me
+* verifica se o lote existe;
+* verifica se o período de vendas está ativo;
+* valida a quantidade disponível;
+* calcula o valor total automaticamente;
+* reduz a quantidade disponível do lote;
+* gera os tickets correspondentes ao pedido.
+
+Exemplo de requisição:
+
+```json
+{
+  "ticketBatchId": 1,
+  "quantity": 2
+}
 ```
 
 ### Tickets
 
+|Método|Endpoint|Acesso|Descrição|
+|-|-|-|-|
+|GET|`/api/tickets/me`|Autenticado|Lista os tickets pertencentes ao usuário autenticado.|
+|POST|`/api/tickets/check-in/{code}`|Admin|Realiza o check-in de um ticket pelo código.|
+
+Os tickets possuem códigos únicos no formato:
+
 ```text
-GET  /api/tickets/me
-POST /api/tickets/check-in/{code}
+EVT-XXXXXXXX
+```
+
+Após o check-in, o ticket é marcado como utilizado e não pode ser validado novamente.
+
+### Respostas HTTP
+
+A API utiliza os principais códigos HTTP abaixo:
+
+|Status|Significado|
+|-|-|
+|`200 OK`|Requisição realizada com sucesso.|
+|`201 Created`|Recurso criado com sucesso.|
+|`204 No Content`|Operação concluída sem conteúdo na resposta.|
+|`400 Bad Request`|Dados inválidos ou regra de negócio violada.|
+|`401 Unauthorized`|Usuário não autenticado ou credenciais inválidas.|
+|`403 Forbidden`|Usuário autenticado, mas sem permissão para a operação.|
+|`404 Not Found`|Recurso não encontrado.|
+|`409 Conflict`|Conflito, como tentativa de cadastrar um e-mail já existente.|
+|`500 Internal Server Error`|Erro interno inesperado.|
+
+### Autorização
+
+Endpoints marcados como `Autenticado` exigem um token JWT válido.
+
+Endpoints marcados como `Admin` exigem autenticação e a role:
+
+```text
+Admin
+```
+
+O token deve ser enviado no header:
+
+```text
+Authorization: Bearer SEU\\\_TOKEN
 ```
 
 ## Tratamento global de exceções
 
-A API possui middleware global para tratamento de exceções.
+A API possui um middleware global responsável por capturar exceções geradas durante a execução da aplicação e convertê-las em respostas HTTP padronizadas.
 
-Principais respostas utilizadas:
+Dessa forma, os controllers não precisam implementar blocos de tratamento de erro individualmente para cada regra de negócio.
 
-```text
-400 Bad Request
-401 Unauthorized
-403 Forbidden
-404 Not Found
-409 Conflict
-500 Internal Server Error
-```
-
-Exemplo:
+Exemplo de resposta:
 
 ```json
 {
@@ -273,7 +337,6 @@ Exemplo:
   "message": "Ticket has already been used."
 }
 ```
-
 ## Banco de dados
 
 O projeto utiliza MySQL com Entity Framework Core.
