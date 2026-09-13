@@ -18,9 +18,9 @@ namespace EventHub.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<PagedResponseDto<EventResponseDto>>> GetAll(int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<PagedResponseDto<EventResponseDto>>> GetAll(int pageNumber = 1, int pageSize = 10, string? name = null, string? location = null, DateTime? startDate = null, DateTime? endDate = null)
         {
-            return Ok(await _eventService.GetAllAsync(pageNumber, pageSize));
+            return Ok(await _eventService.GetAllAsync(pageNumber, pageSize, name, location, startDate, endDate));
         }
 
         [HttpGet("{id}")]

@@ -15,7 +15,7 @@ namespace EventHub.API.Services
             _eventRepository = eventRepository;
         }
 
-        public async Task<PagedResponseDto<EventResponseDto>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<PagedResponseDto<EventResponseDto>> GetAllAsync(int pageNumber, int pageSize, string? name, string? location, DateTime? startDate, DateTime? endDate)
         {
             if (pageNumber < 1)
             {
@@ -27,7 +27,12 @@ namespace EventHub.API.Services
                 throw new BusinessRuleException("Page size must be between 1 and 100.");
             }
 
-            var events = await _eventRepository.GetAllAsync(pageNumber, pageSize);
+            if (startDate.HasValue && endDate.HasValue && startDate > endDate)
+            {
+                throw new BusinessRuleException("Start date cannot be greater than end date.");
+            }
+
+            var events = await _eventRepository.GetAllAsync(pageNumber, pageSize, name, location, startDate, endDate);
             var eventsResponse = new List<EventResponseDto>();
 
             foreach (Event item in events)
@@ -45,7 +50,7 @@ namespace EventHub.API.Services
                 eventsResponse.Add(eventResponse);
             }
 
-            var totalItems = await _eventRepository.CountAsync();
+            var totalItems = await _eventRepository.CountAsync(name, location, startDate, endDate);
 
             var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
 

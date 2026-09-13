@@ -14,9 +14,31 @@ namespace EventHub.API.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Event>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<IEnumerable<Event>> GetAllAsync(int pageNumber, int pageSize, string? name, string? location, DateTime? startDate, DateTime? endDate)
         {
-            return await _context.Events
+            var query = _context.Events.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                query = query.Where(e => e.Name.Contains(name));
+            }
+
+            if (!string.IsNullOrWhiteSpace(location))
+            {
+                query = query.Where(e => e.Location.Contains(location));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(e => e.Date >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(e => e.Date <= endDate.Value);
+            }
+
+            return await query
                 .OrderBy(e => e.Id)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
@@ -48,9 +70,31 @@ namespace EventHub.API.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<int> CountAsync()
+        public async Task<int> CountAsync(string? name, string? location, DateTime? startDate, DateTime? endDate)
         {
-            return await _context.Events.CountAsync();           
+            var query = _context.Events.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                query = query.Where(e => e.Name.Contains(name));
+            }
+
+            if (!string.IsNullOrWhiteSpace(location))
+            {
+                query = query.Where(e => e.Location.Contains(location));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(e => e.Date >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(e => e.Date <= endDate.Value);
+            }
+
+            return await query.CountAsync();
         }
     }
 }
