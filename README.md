@@ -320,7 +320,7 @@ Admin
 O token deve ser enviado no header:
 
 ```text
-Authorization: Bearer SEU\\\_TOKEN
+Authorization: Bearer SEU_TOKEN
 ```
 
 ## Tratamento global de exceções
@@ -361,6 +361,64 @@ Exemplo:
     "DefaultConnection": "Server=localhost;Port=3306;Database=eventhub_db;User=root;Password=SUA_SENHA"
   }
 }
+```
+
+## Diagrama do banco de dados
+
+```mermaid
+erDiagram
+
+    USERS ||--o{ ORDERS : possui
+    EVENTS ||--o{ TICKET_BATCHES : possui
+    TICKET_BATCHES ||--o{ ORDERS : recebe
+    ORDERS ||--o{ TICKETS : gera
+    TICKET_BATCHES ||--o{ TICKETS : pertence
+
+    USERS {
+        int Id PK
+        string Name
+        string Email
+        string PasswordHash
+        int UserRole
+    }
+
+    EVENTS {
+        int Id PK
+        string Name
+        string Description
+        datetime Date
+        string Location
+        int Capacity
+    }
+
+    TICKET_BATCHES {
+        int Id PK
+        string Name
+        decimal Price
+        int Quantity
+        datetime StartDate
+        datetime EndDate
+        int EventId FK
+    }
+
+    ORDERS {
+        int Id PK
+        int UserId FK
+        datetime CreatedAt
+        decimal TotalAmount
+        int Status
+        int TicketBatchId FK
+        int Quantity
+    }
+
+    TICKETS {
+        int Id PK
+        int OrderId FK
+        int TicketBatchId FK
+        string Code
+        bool IsUsed
+        datetime CreatedAt
+    }
 ```
 
 ## Configuração JWT
